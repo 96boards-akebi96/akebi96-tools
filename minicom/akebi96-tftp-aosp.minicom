@@ -1,0 +1,124 @@
+# Akebi96 AOSP TFTP install script
+#
+# Copyright (C) 2019 Linaro Ltd.
+# Masami Hiramatsu <masami.hiramatsu@linaro.org>
+# This program is released under the MIT License, see LICENSE.
+
+print "Akebi96 AOSP install script\n\n"
+
+## Initialize timeout
+timeout 3600
+
+#### RST_CNT : state controll flag
+#### 0 : 1st boot, install firmware
+#### 1 : 2nd boot, install AOSP
+set RST_CNT 0
+
+### Reset returning position
+RESET_POS:
+print "Waiting for boot up"
+
+expect {
+"autoboot:" break
+}
+send "\n"
+expect {
+"=>" break
+}
+
+### Setup TFTP configs
+send "setenv ipaddr $(BOARD_IP)\n"
+send "setenv serverip $(SERVER_IP)\n"
+send "setenv gatewayip $(GATEWAY_IP)\n"
+send "setenv netmask $(NETMASK)\n"
+expect {
+"=>" break
+}
+
+if RST_CNT > 0 goto AOSP_INSTALL
+
+### Write firmware to Boot_Area_1
+send "mmc dev 0 1\n"
+expect {
+"=>" break
+}
+send "tftpboot c0000000 uniphier_bl.bin && mmc write c0000000 0 100\n"
+expect {
+"died" goto tftp_died
+"=>" break
+}
+send "tftpboot c0000000 fip.bin && mmc write c0000000 100 d00\n"
+expect {
+"died" goto tftp_died
+"=>" break
+}
+send "tftpboot c0000000 boot_voc_ld20.bin && mmc write c0000000 e00 200\n"
+expect {
+"died" goto tftp_died
+"=>" break
+}
+send "reset\n"
+
+inc RST_CNT
+goto RESET_POS
+
+AOSP_INSTALL:
+
+# Write AOSP to data partition
+send "mmc dev 0 0\n"
+expect {
+"=>" break
+}
+send "gpt write mmc 0 'name=boot,start=32M,size=64M,uuid=49A4D17F-93A3-45C1-A0DE-F50B2EBE2599;name=recovery,start=96M,size=64M,uuid=4177C722-9E92-4AAB-8644-43502BFD5506;name=system,start=160M,size=1536M,uuid=38F428E6-D326-425D-9140-6E0EA133647C;name=userdata,start=1696M,size=1024M,uuid=DC76DDA9-5AC1-491C-AF42-A82591580C0D;name=vendor,start=2720M,size=1024M,uuid=C5A0AEEC-13EA-11E5-A1B1-001E67CA0C3C;'\n"
+expect {
+"=>" break
+}
+
+send "tftpboot c0000000 boot_fat_sparse.img && mmc erase 10000 20000 && mmc swrite c0000000 10000\n"
+expect {
+"died" goto tftp_died
+"Usage:" goto no_commandopt
+"=>" break
+}
+send "tftpboot 85000000 system.img00.gz && unzip 85000000 c0000000 && mmc erase  50000 100000 && mmc swrite c0000000 50000\n"
+expect {
+"died" goto tftp_died
+"wrote" send "\n"
+"=>" break
+}
+send "tftpboot 85000000 system.img01.gz && unzip 85000000 c0000000 && mmc erase 150000 100000 && mmc swrite c0000000 150000\n"
+expect {
+"died" goto tftp_died
+"wrote" send "\n"
+"=>" break
+}
+send "tftpboot 85000000 system.img02.gz && unzip 85000000 c0000000 && mmc erase 250000 100000 && mmc swrite c0000000 250000\n"
+expect {
+"died" goto tftp_died
+"wrote" send "\n"
+"=>" break
+}
+send "tftpboot c0000000 userdata.img && mmc erase 350000 200000 && mmc swrite c0000000 350000\n"
+expect {
+"died" goto tftp_died
+"wrote" send "\n"
+"=>" break
+}
+send "tftpboot c0000000 vendor.img && mmc erase 550000 200000 && mmc swrite c0000000 550000\n"
+expect {
+"died" goto tftp_died
+"wrote" send "\n"
+"=>" break
+}
+print ""
+print "AOSP installed -- reboot --"
+
+send "reset\n"
+exit
+
+tftp_died:
+print "**ERROR** failed to connect TFTP sever."
+exit
+no_commandopt:
+print "**ERROR** failed to find command options. Maybe miss-configured."
+exit
