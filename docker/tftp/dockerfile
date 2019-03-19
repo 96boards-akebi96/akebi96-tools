@@ -1,0 +1,8 @@
+FROM ubuntu:18.04
+MAINTAINER Masami Hiramatsu <masami.hiramatsu@linaro.org>
+
+VOLUME /var/lib/tftpboot
+EXPOSE 69
+
+RUN apt-get update && apt-get install -y tftpd-hpa
+CMD /usr/sbin/in.tftpd --foreground --user tftp --address 0.0.0.0:69 --secure /var/lib/tftpboot

@@ -1,0 +1,76 @@
+FROM ubuntu:18.04
+MAINTAINER Masami Hiramatsu <masami.hiramatsu@linaro.org>
+# Ubuntu based Akebi96 build environment
+
+# PKG_DEVTOOL: Specify preferrable tools
+ARG PKG_DEVTOOL="vim cscope stgit"
+
+# install tools for building images
+RUN dpkg --add-architecture i386
+RUN apt-get clean && apt-get update && apt-get install --fix-missing -y \
+	git git-core curl wget gzip \
+	build-essential bc bison flex gawk ncurses-dev cpio libssl-dev sparse \
+	ccache cmake autoconf gdisk libc6:i386 libfdt-dev libglib2.0-dev \
+	libpixman-1-dev libstdc++6:i386 libz1:i386 netcat python-crypto \
+	python-serial uuid-dev xz-utils zlib1g-dev git-core diffstat unzip \
+	texinfo gcc-multilib build-essential chrpath socat libsdl1.2-dev xterm \
+	mtd-utils genromfs device-tree-compiler python3 iputils-ping iasl \
+	bsdmainutils u-boot-tools img2simg simg2img repo openjdk-8-jdk ccache \
+	libgl1-mesa-dev libxml2-utils xsltproc lib32ncurses5-dev \
+	x11proto-core-dev libx11-dev lib32z1-dev zip dosfstools mtools \
+	connect-proxy locales python-mako python-pycryptopp kmod sudo \
+	${PKG_DEVTOOL}
+# mtools, simg2img are for tweaking image files
+# python-mako is for OpenGL test framework piglit
+
+# Cross-build environmental variables setup
+ENV HOST_ARCH=x86_64
+ENV CROSS_ARCH32=arm
+ENV TARGET32=${CROSS_ARCH32}-linux-gnueabihf
+ENV CROSS_ARCH=aarch64
+ENV TARGET=${CROSS_ARCH}-linux-gnu
+
+# Release number of arm toolchain
+# See https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
+ARG RELEASE=8.2-2019.01
+
+ENV BASE_URL="https://developer.arm.com/-/media/Files/downloads/gnu-a"
+ENV DLDIR32_URL="${BASE_URL}/${RELEASE}"
+ENV DLDIR_URL="${BASE_URL}/${RELEASE}"
+ENV GCC32_DIR="gcc-arm-${RELEASE}-${HOST_ARCH}-${TARGET32}"
+ENV GCC_DIR="gcc-arm-${RELEASE}-${HOST_ARCH}-${TARGET}"
+ENV GCC32_FILE="${GCC32_DIR}.tar.xz"
+ENV GCC_FILE="${GCC_DIR}.tar.xz"
+
+# install toolchains under /opt/toolchains
+WORKDIR /opt/
+RUN wget ${DLDIR32_URL}/${GCC32_FILE} && tar xf ${GCC32_FILE}
+RUN wget ${DLDIR_URL}/${GCC_FILE} && tar xf ${GCC_FILE}
+
+ENV PATH="$PATH:/opt/${GCC_DIR}/bin:/opt/${GCC32_DIR}/bin"
+# prior target is aarch64
+ENV CROSS_COMPILE=${TARGET}-
+ENV ARCH=arm64
+
+# User ID mapped to binded homedir.
+ARG UID=1000
+
+# setup build user environment
+RUN useradd -m linaro -G sudo -u ${UID}
+RUN echo "linaro ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+USER linaro
+WORKDIR /home/linaro
+ENV USER=linaro
+ENV GROUP=linaro
+ENV HOME=/home/linaro
+
+# configure this for your environment under ~/linaro.
+ENV WORK_DIR=/home/linaro/work
+
+# To run this container, -v ${working_directory}:/home/linaro must be set.
+# If omitted, building workspace may eat up container's storage and crash.
+VOLUME /home/linaro
+
+# If there is build.sh on the binding working directory, execute it. Or
+# just execute bash.
+CMD test -x ./build.sh && ./build.sh || /bin/bash
