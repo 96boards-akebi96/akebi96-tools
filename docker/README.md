@@ -39,9 +39,9 @@ cd akebi96-tools/docker
 ./build.sh
 ```
 
-And run run.sh.
+And run start-buildenv.sh for launching build environment.
 
 ```
-./run.sh
+./start-buildenv.sh
 ```
 
