@@ -12,7 +12,7 @@ timeout 3600
 #### RST_CNT : state controll flag
 #### 0 : 1st boot, install firmware
 #### 1 : 2nd boot, install AOSP
-set RST_CNT 0
+set RST_CNT $(INITCNT)
 
 ### Reset returning position
 RESET_POS:
