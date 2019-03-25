@@ -54,7 +54,7 @@ Then the script starts downloading required source code repositories and build i
 
 ### Instruction to create boot firmware image
 
-Optionally, you can build Akebi96 boot firmware (Trusted Firmware, OP-TEE, and U-Boot) too. This must be done after building AOSP, because we have to reuse OP-TEE OS which has been built with AOSP image.
+After building AOSP, you can build Akebi96 boot firmware (Trusted Firmware, OP-TEE, and U-Boot). Since OP-TEE application and testcases in AOSP depends on the OP-TEE OS built in AOSP build, we have to reuse OP-TEE OS image for this boot firmware.
 
 To build boot firmware image, run `scripts/build-akebi96-firmware.sh` in the container.
 
@@ -95,19 +95,15 @@ NETMASK=255.255.255.0
 MINICOM_OPT="-D /dev/ttyUSB0"
 ```
 
-Make sure your Akebi96 power cable, ethernet cable and USB-serial cable are connected correctly, and run the `akebi96-tftp-aosp.sh` as below.
-
-```
-~/linaro/akebi96-tools/minicom/akebi96-tftp-aosp.sh -c akebi96-minicom.config
-```
-
-And then turn on the Akebi96 board. It should start the minicom script automatically and try to install AOSP on the board.
-
-NOTE that if you want to install the boot firmware too, pass `firmware` to the `akebi96-tftp-aosp.sh` script as below.
+Make sure your Akebi96 power cable, ethernet cable and USB-serial cable are connected correctly, and run the `akebi96-tftp-aosp.sh` with `-c akebi96-minicom.config` and `firmware` options as below.
 
 ```
 ~/linaro/akebi96-tools/minicom/akebi96-tftp-aosp.sh -c akebi96-minicom.config firmware
 ```
 
-This installs both of AOSP and boot firmware.
+And then turn on the Akebi96 board. It should start the minicom script automatically and try to install AOSP on the board.
+
+From the 2nd build/install, you don't need to specify `firmware` unless you want to update firmware.
+
+This installs both of AOSP and boot firmware and reboot the board.
 
