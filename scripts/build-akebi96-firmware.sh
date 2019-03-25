@@ -32,8 +32,10 @@ while [ $# -ne 0 ]; do
 done
 
 ### User custom config
-
-[ -f "$BUILD_CONFIG" ] && . $BUILD_CONFIG
+import_config() { # config-file
+  . $(dirname $1)/$(basename $1)
+}
+[ -f "$BUILD_CONFIG" ] && import_config $BUILD_CONFIG
 
 ## Default Configurations
 
