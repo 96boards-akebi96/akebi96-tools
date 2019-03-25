@@ -29,7 +29,7 @@ while [ $# -ne 0 ]; do
 done
 
 if [ -n "$CONFIG" -a -f "$CONFIG" ]; then
-  . $CONFIG
+  . $(dirname $CONFIG)/$(basename $CONFIG)
 fi
 
 if [ $FWINST -ne 0 ]; then
@@ -44,5 +44,5 @@ export BOARD_IP
 export NETMASK
 export GATEWAY_IP
 
-DIR=`dirname $0`
+DIR=$(dirname $0)
 exec minicom ${MINICOM_OPT} -S ${DIR}/akebi96-tftp-aosp.minicom -C $LOGFILE
