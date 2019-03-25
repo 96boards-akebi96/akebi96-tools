@@ -39,42 +39,42 @@ done
 
 ### Directories
 
-TOPDIR=${TOPDIR:=~/aosp/}
-KBIN_DIR=${KBIN_DIR:=${TOPDIR}/kernel-build}
-ANDR_DIR=${ANDR_DIR:=${TOPDIR}/android}
-IMG_DIR=${IMG_DIR:=${TOPDIR}/images}
-TFTP_DIR=${TFTP_DIR:=${TOPDIR}/tftpboot}
+TOPDIR=${TOPDIR:-~/aosp/}
+KBIN_DIR=${KBIN_DIR:-${TOPDIR}/kernel-build}
+ANDR_DIR=${ANDR_DIR:-${TOPDIR}/android}
+IMG_DIR=${IMG_DIR:-${TOPDIR}/images}
+TFTP_DIR=${TFTP_DIR:-${TOPDIR}/tftpboot}
 
 ### Repositories
 
-: akebi96 ${AKEBI96_PRJ:=https://github.com/96boards-akebi96}
+AKEBI96_PRJ=${AKEBI96_PRJ:-https://github.com/96boards-akebi96}
 
-KSRC_URL=${KSRC_URL:=${AKEBI96_PRJ}/linux.git}
-KSRC_TAG=${KSRC_TAG:=unph-android-v4.19-testing}
-CFG_URL=${CFG_URL:=${AKEBI96_PRJ}/akebi96-configs.git}
-CFG_TAG=${CFG_TAG:=master}
-ACFG_URL=${ACFG_URL:=https://android.googlesource.com/kernel/configs}
-ACFG_TAG=${ACFG_TAG:=master}
-WIFI_URL=${WIFI_URL:=${AKEBI96_PRJ}/rtl8822bu.git}
-WIFI_TAG=${WIFI_TAG:=akebi96}
-BT_URL=${BT_URL:=${AKEBI96_PRJ}/rtk_btusb.git}
-BT_TAG=${BT_TAG:=master}
-MALIP_URL=${MALIP_URL:=${AKEBI96_PRJ}/akebi96-mali-patches.git}
-MALIP_TAG=${MALIP_TAG:=master}
+KSRC_URL=${KSRC_URL:-${AKEBI96_PRJ}/linux.git}
+KSRC_TAG=${KSRC_TAG:-unph-android-v4.19-testing}
+CFG_URL=${CFG_URL:-${AKEBI96_PRJ}/akebi96-configs.git}
+CFG_TAG=${CFG_TAG:-master}
+ACFG_URL=${ACFG_URL:-https://android.googlesource.com/kernel/configs}
+ACFG_TAG=${ACFG_TAG:-master}
+WIFI_URL=${WIFI_URL:-${AKEBI96_PRJ}/rtl8822bu.git}
+WIFI_TAG=${WIFI_TAG:-akebi96}
+BT_URL=${BT_URL:-${AKEBI96_PRJ}/rtk_btusb.git}
+BT_TAG=${BT_TAG:-master}
+MALIP_URL=${MALIP_URL:-${AKEBI96_PRJ}/akebi96-mali-patches.git}
+MALIP_TAG=${MALIP_TAG:-master}
 
-MALI_FILE=${MALI_FILE:=${TOPDIR}/TX041-SW-99002-r26p0-01rel0.tgz}
-MALI_DIR=${MALI_DIR:=${TOPDIR}/mali-midgard}
+MALI_FILE=${MALI_FILE:-${TOPDIR}/TX041-SW-99002-r26p0-01rel0.tgz}
+MALI_DIR=${MALI_DIR:-${TOPDIR}/mali-midgard}
 
-MANIFEST_URL=${MANIFEST_URL:=${AKEBI96_PRJ}/akebi96-known-good-manifests.git}
-MANIFEST_TAG=${MANIFEST_TAG:=master}
-AOSP_URL=${AOSP_URL:=https://android.googlesource.com/platform/manifest}
-AOSP_TAG=${AOSP_TAG:=master}
+MANIFEST_URL=${MANIFEST_URL:-${AKEBI96_PRJ}/akebi96-known-good-manifests.git}
+MANIFEST_TAG=${MANIFEST_TAG:-master}
+AOSP_URL=${AOSP_URL:-https://android.googlesource.com/platform/manifest}
+AOSP_TAG=${AOSP_TAG:-master}
 
 ### Other configs
-JOBS=${JOBS:=`getconf _NPROCESSORS_ONLN`}
-SYNC_JOBS=${SYNC_JOBS:=$JOBS} # Number of jobs for repo-sync: depends on network bandwidth
-REPO_JOBS=${REPO_JOBS:=$JOBS} # Number of jobs for repo-make: depends on memory size (0.5GB/JOB)
-SYNC_GIT=${SYNC_GIT:=0}
+JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
+SYNC_JOBS=${SYNC_JOBS:-$JOBS} # Number of jobs for repo-sync: depends on network bandwidth
+REPO_JOBS=${REPO_JOBS:-$JOBS} # Number of jobs for repo-make: depends on memory size (0.5GB/JOB)
+SYNC_GIT=${SYNC_GIT:-0}
 
 ## Preparation
 export ARCH=arm64

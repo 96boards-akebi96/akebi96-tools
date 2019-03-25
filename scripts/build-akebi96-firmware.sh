@@ -39,31 +39,31 @@ done
 
 ### Directories
 
-TOPDIR=${TOPDIR:=~/aosp/}
-IMG_DIR=${IMG_DIR:=${TOPDIR}/images}
-TFTP_DIR=${TFTP_DIR:=${TOPDIR}/tftpboot}
-ANDR_DIR=${ANDR_DIR:=${TOPDIR}/android}
+TOPDIR=${TOPDIR:-~/aosp/}
+IMG_DIR=${IMG_DIR:-${TOPDIR}/images}
+TFTP_DIR=${TFTP_DIR:-${TOPDIR}/tftpboot}
+ANDR_DIR=${ANDR_DIR:-${TOPDIR}/android}
 
 ### Repositories
 
-AKEBI96_PRJ=${AKEBI96_PRJ:=https://github.com/96boards-akebi96}
+AKEBI96_PRJ=${AKEBI96_PRJ:-https://github.com/96boards-akebi96}
 
-UBL_URL=${UBL_URL:=https://github.com/uniphier/uniphier-bl.git}
-UBL_TAG=${UBL_TAG:=master}
-CFG_URL=${CFG_URL:=${AKEBI96_PRJ}/akebi96-configs.git}
-CFG_TAG=${CFG_TAG:=master}
-PREBIN_URL=${PREBIN_URL:=${AKEBI96_PRJ}/akebi96-prebuild.git}
-PREBIN_TAG=${PREBIN_TAG:=master}
-UBOOT_URL=${UBOOT_URL:=${AKEBI96_PRJ}/u-boot.git}
-UBOOT_TAG=${UBOOT_TAG:=akebi96}
-ATF_URL=${ATF_URL:=${AKEBI96_PRJ}/arm-trusted-firmware.git}
-ATF_TAG=${ATF_TAG:=master}
-MBTLS_URL=${MBTLS_URL:=https://github.com/ARMmbed/mbedtls}
-MBTLS_TAG=${MBTLS_TAG:=mbedtls-2.4.2}
+UBL_URL=${UBL_URL:-https://github.com/uniphier/uniphier-bl.git}
+UBL_TAG=${UBL_TAG:-master}
+CFG_URL=${CFG_URL:-${AKEBI96_PRJ}/akebi96-configs.git}
+CFG_TAG=${CFG_TAG:-master}
+PREBIN_URL=${PREBIN_URL:-${AKEBI96_PRJ}/akebi96-prebuild.git}
+PREBIN_TAG=${PREBIN_TAG:-master}
+UBOOT_URL=${UBOOT_URL:-${AKEBI96_PRJ}/u-boot.git}
+UBOOT_TAG=${UBOOT_TAG:-akebi96}
+ATF_URL=${ATF_URL:-${AKEBI96_PRJ}/arm-trusted-firmware.git}
+ATF_TAG=${ATF_TAG:-master}
+MBTLS_URL=${MBTLS_URL:-https://github.com/ARMmbed/mbedtls}
+MBTLS_TAG=${MBTLS_TAG:-mbedtls-2.4.2}
 
 ### Other configs
-JOBS=${JOBS:=`getconf _NPROCESSORS_ONLN`}
-SYNC_GIT=${SYNC_GIT:=0}
+JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
+SYNC_GIT=${SYNC_GIT:-0}
 
 ## Download Firmware
 
