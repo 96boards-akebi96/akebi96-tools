@@ -73,42 +73,47 @@ send "gpt write mmc 0 'name=boot,start=32M,size=64M,uuid=49A4D17F-93A3-45C1-A0DE
 expect {
 "=>" break
 }
-
 send "tftpboot c0000000 boot_fat_sparse.img && mmc erase 10000 20000 && mmc swrite c0000000 10000\n"
 expect {
 "died" goto tftp_died
 "Usage:" goto no_commandopt
 "=>" break
+timeout 600 goto tftp_timeout
 }
+print "Install system.img00"
 send "tftpboot 85000000 system.img00.gz && unzip 85000000 c0000000 && mmc erase  50000 100000 && mmc swrite c0000000 50000\n"
 expect {
 "died" goto tftp_died
-"wrote" send "\n"
 "=>" break
+timeout 600 goto tftp_timeout
 }
+print "Install system.img01"
 send "tftpboot 85000000 system.img01.gz && unzip 85000000 c0000000 && mmc erase 150000 100000 && mmc swrite c0000000 150000\n"
 expect {
 "died" goto tftp_died
-"wrote" send "\n"
 "=>" break
+timeout 600 goto tftp_timeout
 }
+print "Install system.img02"
 send "tftpboot 85000000 system.img02.gz && unzip 85000000 c0000000 && mmc erase 250000 100000 && mmc swrite c0000000 250000\n"
 expect {
 "died" goto tftp_died
-"wrote" send "\n"
 "=>" break
+timeout 600 goto tftp_timeout
 }
+print "Install userdata"
 send "tftpboot c0000000 userdata.img && mmc erase 350000 200000 && mmc swrite c0000000 350000\n"
 expect {
 "died" goto tftp_died
-"wrote" send "\n"
 "=>" break
+timeout 600 goto tftp_timeout
 }
+print "Install vendor"
 send "tftpboot c0000000 vendor.img && mmc erase 550000 200000 && mmc swrite c0000000 550000\n"
 expect {
 "died" goto tftp_died
-"wrote" send "\n"
 "=>" break
+timeout 600 goto tftp_timeout
 }
 print ""
 print "AOSP installed -- reboot --"
@@ -121,4 +126,7 @@ print "**ERROR** failed to connect TFTP sever."
 exit
 no_commandopt:
 print "**ERROR** failed to find command options. Maybe miss-configured."
+exit
+tftp_timeout:
+print "**ERROR** timeout happens on TFTP transfer."
 exit
