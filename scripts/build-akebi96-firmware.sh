@@ -95,7 +95,7 @@ git_clone MBTLS
 ## Setup Env
 export ARCH=arm64
 export CROSS_COMPILE=aarch64-linux-gnu-
-mkdir -p $ANDR_DIR $IMAGE_DIR $TFTP_DIR
+mkdir -p $ANDR_DIR $IMG_DIR $TFTP_DIR
 
 ## Build U-Boot
 

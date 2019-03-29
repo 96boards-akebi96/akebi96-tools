@@ -81,7 +81,7 @@ SYNC_GIT=${SYNC_GIT:-0}
 ## Preparation
 export ARCH=arm64
 export CROSS_COMPILE=aarch64-linux-gnu-
-mkdir -p $KBIN_DIR $ANDR_DIR $IMAGE_DIR $TFTP_DIR
+mkdir -p $KBIN_DIR $ANDR_DIR $IMG_DIR $TFTP_DIR
 
 ## Download Kernel and Drivers
 
