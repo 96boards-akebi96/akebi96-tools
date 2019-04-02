@@ -73,8 +73,6 @@ UBOOT_URL=${UBOOT_URL:-${AKEBI96_PRJ}/u-boot.git}
 UBOOT_TAG=${UBOOT_TAG:-akebi96}
 ATF_URL=${ATF_URL:-${AKEBI96_PRJ}/arm-trusted-firmware.git}
 ATF_TAG=${ATF_TAG:-master}
-MBTLS_URL=${MBTLS_URL:-https://github.com/ARMmbed/mbedtls}
-MBTLS_TAG=${MBTLS_TAG:-mbedtls-2.4.2}
 
 ### Other configs
 JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
@@ -105,7 +103,6 @@ git_clone CFG
 [ $NO_VOCFW -eq 0 ] && git_clone PREBIN
 git_clone UBOOT
 git_clone ATF
-git_clone MBTLS
 
 ## Setup Env
 export ARCH=arm64
