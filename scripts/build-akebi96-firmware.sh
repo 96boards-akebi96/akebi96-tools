@@ -23,6 +23,8 @@ while [ $# -ne 0 ]; do
     BUILD_CONFIG=${1#--config=};;
   --sync)
     SYNC_GIT=1;;
+  --no-voc)
+    NO_VOCFW=1;;
   --debug)
     set -x;;
   *)
@@ -66,6 +68,7 @@ MBTLS_TAG=${MBTLS_TAG:-mbedtls-2.4.2}
 ### Other configs
 JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
 SYNC_GIT=${SYNC_GIT:-0}
+NO_VOCFW=${NO_VOCFW:-0}
 
 ## Download Firmware
 
@@ -87,7 +90,7 @@ git_clone() { # PREFIX
 cd $TOPDIR
 git_clone UBL
 git_clone CFG
-git_clone PREBIN
+[ $NO_VOCFW -eq 0 ] && git_clone PREBIN
 git_clone UBOOT
 git_clone ATF
 git_clone MBTLS
@@ -103,8 +106,12 @@ cd $UBOOT_DIR
 make uniphier_v8_defconfig
 ./scripts/kconfig/merge_config.sh -m ./.config ${CFG_DIR}/u-boot/akebi96-aosp.config
 make olddefconfig
-cp ${PREBIN_DIR}/u-boot/uniphier-ld20-aosp.h include/configs/
-make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier-ld20-aosp
+if [ $NO_VOCFW -eq 0 ]; then
+  cp ${PREBIN_DIR}/u-boot/uniphier-ld20-aosp.h include/configs/
+  make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier-ld20-aosp
+else
+  make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier
+fi
 cp ./u-boot.bin $IMG_DIR
 
 ## Copy OP-TEE OS from AOSP
@@ -138,7 +145,7 @@ cat bl_ld20_global.bin ${IMG_DIR}/bl2.bin.gz > ${IMG_DIR}/uniphier_bl.bin
 
 cd ${IMG_DIR}
 cp fip.bin uniphier_bl.bin $TFTP_DIR
-cp ${PREBIN_DIR}/boot_voc_ld20.bin $TFTP_DIR
+[ $NO_VOCFW -eq 0 ] && cp ${PREBIN_DIR}/boot_voc_ld20.bin $TFTP_DIR
 
 ls -l $TFTP_DIR
 echo "Done."
