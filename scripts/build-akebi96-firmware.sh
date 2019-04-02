@@ -25,6 +25,8 @@ while [ $# -ne 0 ]; do
     SYNC_GIT=1;;
   --no-voc)
     NO_VOCFW=1;;
+  --no-optee)
+    NO_OPTEE=1;;
   --debug)
     set -x;;
   *)
@@ -69,6 +71,7 @@ MBTLS_TAG=${MBTLS_TAG:-mbedtls-2.4.2}
 JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
 SYNC_GIT=${SYNC_GIT:-0}
 NO_VOCFW=${NO_VOCFW:-0}
+NO_OPTEE=${NO_OPTEE:-0}
 
 ## Download Firmware
 
@@ -115,7 +118,7 @@ fi
 cp ./u-boot.bin $IMG_DIR
 
 ## Copy OP-TEE OS from AOSP
-
+if [ $NO_OPTEE -eq 0 ]; then
 AOSP_OPTEE=${ANDR_DIR}/out/target/product/akebi96/optee/arm-plat-uniphier/core/tee-pager.bin
 CURR_OPTEE=${IMG_DIR}/tee-pager.bin
 
@@ -127,12 +130,19 @@ fi
 if [ ! -f $CURR_OPTEE -o $AOSP_OPTEE -nt $CURR_OPTEE ]; then
   cp -f $AOSP_OPTEE $CURR_OPTEE
 fi
+else
+CURR_OPTEE=
+fi
 
 ## Build Trusted Firmware
 
 cd $ATF_DIR
 make PLAT=uniphier realclean
+if [ "$CURR_OPTEE" ]; then
 make PLAT=uniphier BUILD_PLAT=./build SPD=opteed BL32=$CURR_OPTEE BL33=${IMG_DIR}/u-boot.bin bl2_gzip fip
+else
+make PLAT=uniphier BUILD_PLAT=./build BL33=${IMG_DIR}/u-boot.bin bl2_gzip fip
+fi
 cp build/fip.bin build/bl2.bin.gz ${IMG_DIR}
 
 ## Build uniphier-bl
