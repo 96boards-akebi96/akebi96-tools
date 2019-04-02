@@ -6,7 +6,12 @@
 usage(){ # error-message
   echo "$0: Build script for Akebi96 AOSP, Kernel and Drivers"
   [ "$1" ] && echo "ERROR: $1"
-  echo "Usage: $0 [-c|--config CONFIG_FILE]"
+  echo "Usage: $0 [OPTIONS]"
+  echo "Options:"
+  echo "	-c CONFIG, --config=CONFIG      Use CONFIG file"
+  echo "	--sync          Sync the source code"
+  echo "	--debug         Show executed commands for debug"
+  echo "	-h, --help      Show this message"
   [ "$1" ] && exit 1
   exit 0
 }
@@ -25,6 +30,8 @@ while [ $# -ne 0 ]; do
     SYNC_GIT=1;;
   --debug)
     set -x;;
+  -h|--help)
+    usage ;;
   *)
     usage "Unrecognized option: $1" ;;
   esac
