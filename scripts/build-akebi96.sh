@@ -87,6 +87,7 @@ SYNC_JOBS=${SYNC_JOBS:-$JOBS} # Number of jobs for repo-sync: depends on network
 REPO_JOBS=${REPO_JOBS:-$JOBS} # Number of jobs for repo-make: depends on memory size (0.5GB/JOB)
 SYNC_GIT=${SYNC_GIT:-0}
 NO_AOSP=${NO_AOSP:-0}
+KMENUCONFIG=${KMENUCONFIG:-0}
 OPT_KCONFIG=${OPT_KCONFIG:-}
 
 ## Preparation
@@ -145,10 +146,26 @@ make O=$KBIN_DIR defconfig
 	${ACFG_DIR}/android-4.19/android-recommended-arm64.config \
 	${CFG_DIR}/linux/akebi96-aosp-vendor.config ${OPT_KCONFIG}
 make O=$KBIN_DIR olddefconfig
-make O=$KBIN_DIR -j $JOBS Image socionext/uniphier-ld20-akebi96.dtb
-cp ${KBIN_DIR}/arch/arm64/boot/Image \
-   ${KBIN_DIR}/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dtb \
-   $IMG_DIR
+[ $KMENUCONFIG -ne 0 ] && make O=$KBIN_DIR menuconfig
+GITHASH=$(git log -n 1 --format="%h")
+echo "# $GITHASH" >> ${KCONFIG_CONFIG}
+
+BUILD_KERNEL=$(git diff | wc -l)
+if [ $BUILD_KERNEL -eq 0 ] ; then
+  if [ -f ${IMG_DIR}/kconfig ]; then
+    BUILD_KERNEL=$(diff ${IMG_DIR}/kconfig ${KCONFIG_CONFIG} | wc -l)
+  else
+    BUILD_KERNEL=1
+  fi
+fi
+
+if [ $BUILD_KERNEL -ne 0 ] ; then
+  make O=$KBIN_DIR -j $JOBS Image socionext/uniphier-ld20-akebi96.dtb
+  cp ${KBIN_DIR}/arch/arm64/boot/Image \
+     ${KBIN_DIR}/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dtb \
+     $IMG_DIR
+  cp ${KCONFIG_CONFIG} ${IMG_DIR}/kconfig
+fi
 
 export KVER=`make O=$KBIN_DIR -s kernelrelease`
 
