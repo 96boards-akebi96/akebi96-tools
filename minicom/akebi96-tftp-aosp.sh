@@ -6,11 +6,14 @@
 # This program is released under the MIT License, see LICENSE.
 
 usage(){
-  echo "Usage: $0 [-c CONFIG_FILE] [firmware]"
+  echo "Usage: $0 [-c CONFIG_FILE] [firmware|aosp|all]"
   exit 0
 }
 
-FWINST=0
+# install AOSP by default
+MAXCNT=1
+INITCNT=1
+
 SERVER_IP=192.168.11.1
 BOARD_IP=192.168.11.10
 GATEWAY_IP=192.168.11.1
@@ -23,7 +26,9 @@ CONFIG=
 while [ $# -ne 0 ]; do
   case $1 in
   -c) CONFIG=$2 ; shift 2;;
-  firmware) FWINST=1; shift 1;;
+  firmware) INITCNT=0; MAXCNT=0; shift 1;;
+  aosp) INITCNT=1; MAXCNT=1; shift 1;;
+  all) INITCNT=0; MAXCNT=1; shift 1;;
   *) usage ;;
   esac
 done
@@ -32,13 +37,8 @@ if [ -n "$CONFIG" -a -f "$CONFIG" ]; then
   . $(dirname $CONFIG)/$(basename $CONFIG)
 fi
 
-if [ $FWINST -ne 0 ]; then
-  INITCNT=0	# Install AOSP and firmware
-else
-  INITCNT=1	# Install AOSP only
-fi
-
 export INITCNT
+export MAXCNT
 export SERVER_IP
 export BOARD_IP
 export NETMASK

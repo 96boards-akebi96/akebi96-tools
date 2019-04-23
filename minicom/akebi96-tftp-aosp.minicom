@@ -14,8 +14,14 @@ timeout 3600
 #### 1 : 2nd boot, install AOSP
 set RST_CNT $(INITCNT)
 
+#### MAX_CNT : where we stop
+# 0 : Install only firmware
+# 1 : Install AOSP
+set MAX_CNT $(MAXCNT)
+
 ### Reset returning position
 RESET_POS:
+if RST_CNT > MAX_CNT goto END
 print "Waiting for boot up"
 
 expect {
@@ -63,7 +69,6 @@ inc RST_CNT
 goto RESET_POS
 
 AOSP_INSTALL:
-
 # Write AOSP to data partition
 send "mmc dev 0 0\n"
 expect {
@@ -118,6 +123,8 @@ timeout 600 goto tftp_timeout
 print ""
 print "AOSP installed -- reboot --"
 
+END:
+print "End. Reboot the system"
 send "reset\n"
 exit
 
