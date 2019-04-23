@@ -84,6 +84,7 @@ JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
 SYNC_JOBS=${SYNC_JOBS:-$JOBS} # Number of jobs for repo-sync: depends on network bandwidth
 REPO_JOBS=${REPO_JOBS:-$JOBS} # Number of jobs for repo-make: depends on memory size (0.5GB/JOB)
 SYNC_GIT=${SYNC_GIT:-0}
+OPT_KCONFIG=${OPT_KCONFIG:-}
 
 ## Preparation
 export ARCH=arm64
@@ -139,7 +140,7 @@ make O=$KBIN_DIR defconfig
 	${ACFG_DIR}/android-4.19/android-base.config \
 	${ACFG_DIR}/android-4.19/android-recommended.config \
 	${ACFG_DIR}/android-4.19/android-recommended-arm64.config \
-	${CFG_DIR}/linux/akebi96-aosp-vendor.config
+	${CFG_DIR}/linux/akebi96-aosp-vendor.config ${OPT_KCONFIG}
 make O=$KBIN_DIR olddefconfig
 make O=$KBIN_DIR -j $JOBS Image socionext/uniphier-ld20-akebi96.dtb
 cp ${KBIN_DIR}/arch/arm64/boot/Image \
