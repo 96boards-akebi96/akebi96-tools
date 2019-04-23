@@ -28,6 +28,8 @@ while [ $# -ne 0 ]; do
     BUILD_CONFIG=${1#--config=};;
   --sync)
     SYNC_GIT=1;;
+  --no-aosp)
+    NO_AOSP=1;;
   --debug)
     set -x;;
   -h|--help)
@@ -84,6 +86,7 @@ JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
 SYNC_JOBS=${SYNC_JOBS:-$JOBS} # Number of jobs for repo-sync: depends on network bandwidth
 REPO_JOBS=${REPO_JOBS:-$JOBS} # Number of jobs for repo-make: depends on memory size (0.5GB/JOB)
 SYNC_GIT=${SYNC_GIT:-0}
+NO_AOSP=${NO_AOSP:-0}
 OPT_KCONFIG=${OPT_KCONFIG:-}
 
 ## Preparation
@@ -162,6 +165,12 @@ cp rtk_btusb.ko $IMG_DIR
 cd $MALI_DIR
 make KERNEL_DIR=${KSRC_DIR} MAKETOP=$IMG_DIR O=${KBIN_DIR} modules -j  $JOBS
 cp drivers/gpu/arm/midgard/mali_kbase.ko $IMG_DIR
+
+if [ $NO_AOSP -ne 0 ]; then
+   echo "Skip building AOSP"
+   ls -l $IMG_DIR
+   exit 0
+fi
 
 # Build AOSP9
 ## Download AOSP 9
