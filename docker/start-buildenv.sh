@@ -69,5 +69,5 @@ else
   exec docker run --rm -ti \
 	-v ${HOMEDIR}:/home/linaro \
 	-v ${HOME}/.ssh:/home/linaro/.ssh \
-	-u ${_UID} ${ENVOPT} ${OPT} ${TAG} ${CMD}
+	-u ${_UID} ${ENVOPT} ${OPT} ${TAG}/${_UID} ${CMD}
 fi
