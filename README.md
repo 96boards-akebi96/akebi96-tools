@@ -5,6 +5,7 @@ This repository provides tools and scripts which helps user to build platform bi
 - Docker based build environment and tftp server
 - Build Shell scripts
 - Minicom scripts for boot and installation via TFTP
+- U-Boot script for recovery and update via USB device
 
 ## Recommended Instruction to Create/Install AOSP
 
@@ -79,10 +80,19 @@ linaro@akebi96-dev:~$ akebi96-tools/scripts/build-akebi96-firmware.sh
 
 After that, please exit the container by `exit` command.
 
-### Instruction to flash AOSP image
 
-As a standard process, we recommend you to flash the image via TFTP, because USB-gadget interface on Akebi96 is slower than Ethernet interface on the board.
+## Installation
 
+To install built images, Akebi96 supports 3 methods, USB mass-storage device, TFTP, and Fastboot via USB-gadget.
+As a standard process, we recommend you to flash the image via USB mass-storage or TFTP, because USB-gadget interface on Akebi96 is slower than USB and Ethernet interface on the board.
+
+### Instruction to flash AOSP image via USB-mass-storage
+
+If you have a USB mass-storage device (a.k.a. USB-disk), it is the easiest way to use it to flash the images. See recovery/README.md for the instruction.
+
+### Instruction to flash AOSP image via TFTP
+
+If you can setup your network for TFTP boot, this is another better option to update the image.
 To setup the tftp server, it is easy to use tftpserver container to start tftp server.
 
 ```
