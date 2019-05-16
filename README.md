@@ -21,6 +21,19 @@ cd ~/linaro
 git clone https://github.com/96boards-akebi96/akebi96-tools.git
 ```
 
+#### Download Mali Kernel Driver
+
+In this version, you have to download Mali kernel driver
+ (TX041-SW-99002-r26p0-01rel0.tgz) from arm's download site manually
+( https://developer.arm.com/products/software/mali-drivers/midgard-kernel ).
+
+Download it and put it under ~/linaro/aosp directory.
+
+```
+mkdir ~/linaro/aosp/
+mv TX041-SW-99002-r26p0-01rel0.tgz ~/linaro/aosp/
+```
+
 ### Instruction to create docker image
 
 Next, create docker image for build environment and tftp server.
@@ -30,7 +43,9 @@ cd ~/linaro/akebi96-tools/docker
 ./build.sh
 ```
 
-This may take an hour to download cross-build tools.
+This may take an hour to download cross-build tools. After that,
+you will see 'akebi96-dev/<YOUR-UID>' and 'tftp' container images
+in your docker.
 See docker/README.md for more deteils.
 
 ### Instruction to create AOSP image
