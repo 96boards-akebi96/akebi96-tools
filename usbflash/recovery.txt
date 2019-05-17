@@ -2,8 +2,8 @@
 fw_folder=/boot
 img_folder=/images
 
-### Temporary buffer address
-buf_addr=0xc0000000
+### Temporary buffer address (avoid Video FB)
+buf_addr=0xc2000000
 
 echo "*********************************************"
 echo "*** Writing boot-FW to boot partition ... ***"
@@ -40,7 +40,7 @@ echo 'Writing /boot ...'
 fatload usb ${devnum}:${partnum} $buf_addr $img_folder/boot_fat.img && mmc write $buf_addr 0x10000 0x20000
 
 echo 'Writing /system ...'
-# if system.img is bigger than 1GB - 4kB, we have to use write with split images
+# if system.img is bigger than 1GB - 4kB - 32MB, we have to use split images
 fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-0.img && mmc erase 0x50000 0x300000 && mmc write $buf_addr 0x50000 0x100000
 fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-1.img && mmc write $buf_addr 0x150000 0x100000
 fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-2.img && mmc write $buf_addr 0x250000 0x100000
