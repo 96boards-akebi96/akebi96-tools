@@ -10,16 +10,16 @@ echo "*** Writing boot-FW to boot partition ... ***"
 echo "*********************************************"
 
 mmc dev 0 1
-fatload usb 0:1 $buf_addr $fw_folder/unph_bl.bin   && mmc write $buf_addr 0x00000000 0x00000100
-fatload usb 0:1 $buf_addr $fw_folder/fip.bin     && mmc write $buf_addr 0x00000100 0x00000d00
-fatload usb 0:1 $buf_addr $fw_folder/boot_voc_ld20.bin     && mmc write $buf_addr 0x00000e00 0x00000200
+fatload usb ${devnum}:${partnum} $buf_addr $fw_folder/unph_bl.bin   && mmc write $buf_addr 0x00000000 0x00000100
+fatload usb ${devnum}:${partnum} $buf_addr $fw_folder/fip.bin     && mmc write $buf_addr 0x00000100 0x00000d00
+fatload usb ${devnum}:${partnum} $buf_addr $fw_folder/boot_voc_ld20.bin     && mmc write $buf_addr 0x00000e00 0x00000200
 
 echo "***************************************"
 echo "*** Writing GPT partition ...       ***"
 echo "***************************************"
 
 mmc dev 0 0
-fatls usb 0:1 $img_folder && gpt write mmc 0 'name=boot,start=32M,size=64M,uuid=49A4D17F-93A3-45C1-A0DE-F50B2EBE2599;name=recovery,start=96M,size=64M,uuid=4177C722-9E92-4AAB-8644-43502BFD5506;name=system,start=160M,size=1536M,uuid=38F428E6-D326-425D-9140-6E0EA133647C;name=userdata,start=1696M,size=1024M,uuid=DC76DDA9-5AC1-491C-AF42-A82591580C0D;name=vendor,start=2720M,size=1024M,uuid=C5A0AEEC-13EA-11E5-A1B1-001E67CA0C3C;'
+fatls usb ${devnum}:${partnum} $img_folder && gpt write mmc 0 'name=boot,start=32M,size=64M,uuid=49A4D17F-93A3-45C1-A0DE-F50B2EBE2599;name=recovery,start=96M,size=64M,uuid=4177C722-9E92-4AAB-8644-43502BFD5506;name=system,start=160M,size=1536M,uuid=38F428E6-D326-425D-9140-6E0EA133647C;name=userdata,start=1696M,size=1024M,uuid=DC76DDA9-5AC1-491C-AF42-A82591580C0D;name=vendor,start=2720M,size=1024M,uuid=C5A0AEEC-13EA-11E5-A1B1-001E67CA0C3C;'
 # LABEL    START   SIZE  SECTOR(512) UUID
 # boot       32M   +64M  0x0010000   49A4D17F-93A3-45C1-A0DE-F50B2EBE2599
 # recovery   96M   +64M  0x0030000   4177C722-9E92-4AAB-8644-43502BFD5506
@@ -37,21 +37,21 @@ md5addr2=0x84ffff80
 mmc dev 0 0
 
 echo 'Writing /boot ...'
-fatload usb 0:1 $buf_addr $img_folder/boot_fat.img && mmc write $buf_addr 0x10000 0x20000
+fatload usb ${devnum}:${partnum} $buf_addr $img_folder/boot_fat.img && mmc write $buf_addr 0x10000 0x20000
 
 echo 'Writing /system ...'
 # if system.img is bigger than 1GB - 4kB, we have to use write with split images
-fatload usb 0:1 $buf_addr $img_folder/system-0.img && mmc erase 0x50000 0x300000 && mmc write $buf_addr 0x50000 0x100000
-fatload usb 0:1 $buf_addr $img_folder/system-1.img && mmc write $buf_addr 0x150000 0x100000
-fatload usb 0:1 $buf_addr $img_folder/system-2.img && mmc write $buf_addr 0x250000 0x100000
+fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-0.img && mmc erase 0x50000 0x300000 && mmc write $buf_addr 0x50000 0x100000
+fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-1.img && mmc write $buf_addr 0x150000 0x100000
+fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-2.img && mmc write $buf_addr 0x250000 0x100000
 
 echo 'Writing /userdata ...'
-fatload usb 0:1 $buf_addr $img_folder/userdata.img && mmc erase 0x350000 0x200000 && mmc swrite $buf_addr 0x350000
+fatload usb ${devnum}:${partnum} $buf_addr $img_folder/userdata.img && mmc erase 0x350000 0x200000 && mmc swrite $buf_addr 0x350000
 
 echo 'Writing /vendor ...'
-fatload usb 0:1 $buf_addr $img_folder/vendor.img && mmc erase 0x550000 0x200000 && mmc swrite $buf_addr 0x550000
-fatload usb 0:1 $md5addr1 $img_folder/vendor-0.md5 && mmc read $buf_addr 0x550000 0x100000 && md5sum $buf_addr 0x20000000 *$md5addr2 && cmp.b $md5addr1 $md5addr2 0x10 || echo "!!ERROR!! md5sum checksum error"
-fatload usb 0:1 $md5addr1 $img_folder/vendor-1.md5 && mmc read $buf_addr 0x650000 0x100000 && md5sum $buf_addr 0x20000000 *$md5addr2 && cmp.b $md5addr1 $md5addr2 0x10 || echo "!!ERROR!! md5sum checksum error"
+fatload usb ${devnum}:${partnum} $buf_addr $img_folder/vendor.img && mmc erase 0x550000 0x200000 && mmc swrite $buf_addr 0x550000
+fatload usb ${devnum}:${partnum} $md5addr1 $img_folder/vendor-0.md5 && mmc read $buf_addr 0x550000 0x100000 && md5sum $buf_addr 0x20000000 *$md5addr2 && cmp.b $md5addr1 $md5addr2 0x10 || echo "!!ERROR!! md5sum checksum error"
+fatload usb ${devnum}:${partnum} $md5addr1 $img_folder/vendor-1.md5 && mmc read $buf_addr 0x650000 0x100000 && md5sum $buf_addr 0x20000000 *$md5addr2 && cmp.b $md5addr1 $md5addr2 0x10 || echo "!!ERROR!! md5sum checksum error"
 
 echo "***************************************"
 echo "*** System Update is finished.      ***"
