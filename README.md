@@ -83,12 +83,12 @@ After that, please exit the container by `exit` command.
 
 ## Installation
 
-To install built images, Akebi96 supports 3 methods, USB mass-storage device, TFTP, and Fastboot via USB-gadget.
-As a standard process, we recommend you to flash the image via USB mass-storage or TFTP, because USB-gadget interface on Akebi96 is slower than USB and Ethernet interface on the board.
+To install built images, Akebi96 supports 3 methods, USB flash drive, TFTP, and Fastboot via USB-gadget.
+As a standard process, we recommend you to flash the image via USB flash drive or TFTP, because USB-gadget interface on Akebi96 is slower than USB and Ethernet interface on the board.
 
-### Instruction to flash AOSP image via USB-mass-storage
+### Instruction to flash AOSP image via USB flash drive
 
-If you have a USB mass-storage device (a.k.a. USB-disk), it is the easiest way to use it to flash the images. See recovery/README.md for the instruction.
+If you have a USB flash drive, it is the easiest way to use it to flash the images. See usbflash/README.md for the instruction.
 
 ### Instruction to flash AOSP image via TFTP
 
