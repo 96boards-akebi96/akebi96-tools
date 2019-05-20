@@ -19,6 +19,10 @@ usage(){
   exit 0
 }
 
+abspath() {
+  (cd $(dirname $1) && echo $(pwd)/$(basename $1))
+}
+
 TAG=akebi96-dev
 NAME=akebi96-dev
 
@@ -42,7 +46,7 @@ RERUN=`docker ps -a --format="{{.ID}}" --filter=name=$NAME`
 
 while [ $# -ne 0 ] ; do
   case $1 in
-    -h) HOMEDIR=$2; shift 2;;
+    -h) HOMEDIR=$(abspath $2); shift 2;;
     -u) _UID=$2: shift 2;;
     -*) usage;;
     *) CMD="$@"; shift $#;;
