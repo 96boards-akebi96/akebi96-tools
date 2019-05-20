@@ -5,6 +5,9 @@ img_folder=/images
 ### Temporary buffer address (avoid Video FB)
 buf_addr=0xc2000000
 
+### Load a wallpaper :-)
+fatload usb ${devnum}:${partnum} 0xc0000000 /wallpaper.raw
+
 echo "*********************************************"
 echo "*** Writing boot-FW to boot partition ... ***"
 echo "*********************************************"
