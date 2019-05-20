@@ -88,7 +88,7 @@ As a standard process, we recommend you to flash the image via USB flash drive o
 
 ### Instruction to flash AOSP image via USB flash drive
 
-If you have a USB flash drive, it is the easiest way to use it to flash the images. See usbflash/README.md for the instruction.
+If you have a USB flash drive, it is the easiest way to use it to flash the images. See [Akebi96 USB Recovery Script](usbflash/README.md) for the instruction.
 
 ### Instruction to flash AOSP image via TFTP
 
