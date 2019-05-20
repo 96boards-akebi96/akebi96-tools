@@ -4,6 +4,7 @@ img_folder=/images
 
 ### Temporary buffer address (avoid Video FB)
 buf_addr=0xc2000000
+tmp_addr=0x85000000
 
 ### Load a wallpaper :-)
 fatload usb ${devnum}:${partnum} 0xc0000000 /wallpaper.raw
@@ -34,27 +35,24 @@ fatls usb ${devnum}:${partnum} $img_folder && gpt write mmc 0 'name=boot,start=3
 echo "**************************************"
 echo "*** Writing AOSP images ...        ***"
 echo "**************************************"
-md5addr1=0x84ffff00
-md5addr2=0x84ffff80
 
 mmc dev 0 0
 
 echo 'Writing /boot ...'
-fatload usb ${devnum}:${partnum} $buf_addr $img_folder/boot_fat.img && mmc write $buf_addr 0x10000 0x20000
+fatload usb ${devnum}:${partnum} $buf_addr $img_folder/boot_fat_sparse.img && mmc erase 10000 20000 && mmc swrite $buf_addr 10000
 
 echo 'Writing /system ...'
-# if system.img is bigger than 1GB - 4kB - 32MB, we have to use split images
-fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-0.img && mmc erase 0x50000 0x300000 && mmc write $buf_addr 0x50000 0x100000
-fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-1.img && mmc write $buf_addr 0x150000 0x100000
-fatload usb ${devnum}:${partnum} $buf_addr $img_folder/system-2.img && mmc write $buf_addr 0x250000 0x100000
+# Since system.img is bigger than 1GB - 4kB - 32MB, we have to use split images
+
+fatload usb ${devnum}:${partnum} $tmp_addr $img_folder/system.img00.gz && unzip $tmp_addr $buf_addr && mmc erase 0x50000 0x100000 && mmc swrite $buf_addr 0x50000
+fatload usb ${devnum}:${partnum} $tmp_addr $img_folder/system.img01.gz && unzip $tmp_addr $buf_addr && mmc erase 0x150000 0x100000 && mmc swrite $buf_addr 0x150000
+fatload usb ${devnum}:${partnum} $tmp_addr $img_folder/system.img02.gz && unzip $tmp_addr $buf_addr && mmc erase 0x250000 0x100000 && mmc swrite $buf_addr 0x250000
 
 echo 'Writing /userdata ...'
 fatload usb ${devnum}:${partnum} $buf_addr $img_folder/userdata.img && mmc erase 0x350000 0x200000 && mmc swrite $buf_addr 0x350000
 
 echo 'Writing /vendor ...'
 fatload usb ${devnum}:${partnum} $buf_addr $img_folder/vendor.img && mmc erase 0x550000 0x200000 && mmc swrite $buf_addr 0x550000
-fatload usb ${devnum}:${partnum} $md5addr1 $img_folder/vendor-0.md5 && mmc read $buf_addr 0x550000 0x100000 && md5sum $buf_addr 0x20000000 *$md5addr2 && cmp.b $md5addr1 $md5addr2 0x10 || echo "!!ERROR!! md5sum checksum error"
-fatload usb ${devnum}:${partnum} $md5addr1 $img_folder/vendor-1.md5 && mmc read $buf_addr 0x650000 0x100000 && md5sum $buf_addr 0x20000000 *$md5addr2 && cmp.b $md5addr1 $md5addr2 0x10 || echo "!!ERROR!! md5sum checksum error"
 
 echo "***************************************"
 echo "*** System Update is finished.      ***"
