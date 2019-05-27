@@ -51,7 +51,7 @@ If there are no images, the recovery script can just skip it.
 
 ```
 $ cd ~/linaro/aosp/tftpboot
-$ cp boot*.img system.img* userdata.img vendor.img /mnt/boot/
+$ cp boot*.img system.img* userdata.img vendor.img /mnt/images/
 ```
 
 ## Recovery Instruction
