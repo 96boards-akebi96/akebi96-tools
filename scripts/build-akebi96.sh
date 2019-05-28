@@ -74,6 +74,8 @@ BT_URL=${BT_URL:-${AKEBI96_PRJ}/rtk_btusb.git}
 BT_TAG=${BT_TAG:-master}
 MALIP_URL=${MALIP_URL:-${AKEBI96_PRJ}/akebi96-mali-patches.git}
 MALIP_TAG=${MALIP_TAG:-master}
+VOCD_URL=${VOCD_URL:-${AKEBI96_PRJ}/kmod-video-out.git}
+VOCD_TAG=${VOCD_TAG:-master}
 
 MALI_FILE=${MALI_FILE:-${TOPDIR}/TX041-SW-99002-r26p0-01rel0.tgz}
 MALI_DIR=${MALI_DIR:-${TOPDIR}/mali-midgard}
@@ -122,6 +124,7 @@ git_clone CFG
 git_clone ACFG
 git_clone WIFI
 git_clone BT
+git_clone VOCD
 
 if [ $ONLY_AOSP -ne 1 ]; then
 ## Download and patch Mali kernel driver
@@ -184,6 +187,10 @@ cd $BT_DIR
 make KBUILD=$KBIN_DIR -j $JOBS
 cp rtk_btusb.ko $IMG_DIR
 
+cd $VOCD_DIR
+make modules KERNEL_DIR=${KBIN_DIR} -j $JOBS
+cp vocdrv_ld20/vocdrv-ld20.ko $IMG_DIR
+
 cd $MALI_DIR
 make KERNEL_DIR=${KSRC_DIR} MAKETOP=$IMG_DIR O=${KBIN_DIR} modules -j  $JOBS
 cp drivers/gpu/arm/midgard/mali_kbase.ko $IMG_DIR
@@ -219,7 +226,11 @@ fi
 ### Update prebuild binaries
 cp ${IMG_DIR}/Image ${IMG_DIR}/uniphier-ld20-akebi96.dtb \
    ${IMG_DIR}/8822bu.ko ${IMG_DIR}/rtk_btusb.ko ${IMG_DIR}/mali_kbase.ko \
+   ${IMG_DIR}/vocdrv-ld20.ko \
    device/linaro/akebi96/copy/
+mkdir -p device/linaro/akebi96/copy/kernel-headers/asm/
+cp ${VOCD_DIR}/vocdrv_ld20/vocd_driver.h \
+   device/linaro/akebi96/copy/kernel-headers/asm/
 
 ### Build AOSP
 
