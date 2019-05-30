@@ -106,9 +106,9 @@ git_clone() { # PREFIX
   if [ ! -d ${TOPDIR}/${_TMP} ]; then
     eval "git clone -b \$${1}_TAG --single-branch \$${1}_URL \$${1}_DIR"
   elif [ $SYNC_GIT -eq 1 ]; then
-    eval "cd \$${1}_DIR"
-    eval "git fetch origin \$${1}_TAG"
-    eval "git reset --hard origin/\$${1}_TAG"
+    (eval "cd \$${1}_DIR"
+     eval "git fetch origin \$${1}_TAG"
+     eval "git reset --hard origin/\$${1}_TAG")
   fi
 }
 
