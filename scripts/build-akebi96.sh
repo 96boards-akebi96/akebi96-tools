@@ -30,6 +30,8 @@ while [ $# -ne 0 ]; do
     SYNC_GIT=1;;
   --no-aosp)
     NO_AOSP=1;;
+  --only-aosp)
+    ONLY_AOSP=1;;
   --debug)
     set -x;;
   -h|--help)
@@ -87,6 +89,7 @@ SYNC_JOBS=${SYNC_JOBS:-$JOBS} # Number of jobs for repo-sync: depends on network
 REPO_JOBS=${REPO_JOBS:-$JOBS} # Number of jobs for repo-make: depends on memory size (0.5GB/JOB)
 SYNC_GIT=${SYNC_GIT:-0}
 NO_AOSP=${NO_AOSP:-0}
+ONLY_AOSP=${ONLY_AOSP:-0}
 KMENUCONFIG=${KMENUCONFIG:-0}
 OPT_KCONFIG=${OPT_KCONFIG:-}
 
@@ -112,6 +115,7 @@ git_clone() { # PREFIX
   fi
 }
 
+
 cd $TOPDIR
 git_clone KSRC
 git_clone CFG
@@ -119,6 +123,7 @@ git_clone ACFG
 git_clone WIFI
 git_clone BT
 
+if [ $ONLY_AOSP -ne 1 ]; then
 ## Download and patch Mali kernel driver
 
 if [ ! -d $MALI_DIR ]; then
@@ -182,6 +187,8 @@ cp rtk_btusb.ko $IMG_DIR
 cd $MALI_DIR
 make KERNEL_DIR=${KSRC_DIR} MAKETOP=$IMG_DIR O=${KBIN_DIR} modules -j  $JOBS
 cp drivers/gpu/arm/midgard/mali_kbase.ko $IMG_DIR
+
+fi ## !ONLY_AOSP
 
 if [ $NO_AOSP -ne 0 ]; then
    echo "Skip building AOSP"
