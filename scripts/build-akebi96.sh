@@ -77,7 +77,7 @@ MALIP_TAG=${MALIP_TAG:-master}
 VOCD_URL=${VOCD_URL:-${AKEBI96_PRJ}/kmod-video-out.git}
 VOCD_TAG=${VOCD_TAG:-master}
 
-MALI_FILE=${MALI_FILE:-${TOPDIR}/TX041-SW-99002-r26p0-01rel0.tgz}
+MALI_FILE=${MALI_FILE:-${TOPDIR}/TX041-SW-99002-r28p0-01rel0.tgz}
 MALI_DIR=${MALI_DIR:-${TOPDIR}/mali-midgard}
 
 MANIFEST_URL=${MANIFEST_URL:-${AKEBI96_PRJ}/akebi96-known-good-manifests.git}
