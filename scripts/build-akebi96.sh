@@ -198,6 +198,8 @@ if [ ! -d .repo ]; then
   repo init -u $AOSP_URL -b $AOSP_TAG
   cp $MANIFEST_DIR/akebi96.xml .repo/manifests/
   SYNC_GIT=1
+elif [ $SYNC_GIT -eq 1 ]; then
+  cp $MANIFEST_DIR/akebi96.xml .repo/manifests/
 fi
 
 ### Sync AOSP 9
