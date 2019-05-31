@@ -206,8 +206,9 @@ fi
 # Build AOSP9
 ## Download AOSP 9
 
-cd $ANDR_DIR
 git_clone MANIFEST
+
+cd $ANDR_DIR
 if [ ! -d .repo ]; then
   repo init -u $AOSP_URL -b $AOSP_TAG
   cp $MANIFEST_DIR/akebi96.xml .repo/manifests/
