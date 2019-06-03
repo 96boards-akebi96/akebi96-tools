@@ -129,8 +129,9 @@ git_clone VOCD
 if [ $ONLY_AOSP -ne 1 ]; then
 ## Download and patch Mali kernel driver
 
-if [ ! -d $MALI_DIR ]; then
+if [ ! -d $MALI_DIR -o $SYNC_GIT -eq 1 ]; then
   git_clone MALIP
+  rm -rf $MALI_DIR
   TMPDIR=`mktemp -d /tmp/mali-XXXXXX`
   tar xzf $MALI_FILE -C $TMPDIR
   mv $TMPDIR/*/driver/product/kernel/ $MALI_DIR
