@@ -45,9 +45,8 @@ cd ~/linaro/akebi96-tools/docker
 ```
 
 This may take an hour to download cross-build tools. After that,
-you will see 'akebi96-dev/<YOUR-UID>' and 'tftp' container images
-in your docker.
-See docker/README.md for more deteils.
+you will see 'akebi96-dev/<YOUR-UID>' and 'tftp' container images in your docker.
+See [Docker based Build Environment for Akebi96](docker/README.md) for more deteils.
 
 ### Instruction to create AOSP image
 
