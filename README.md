@@ -25,14 +25,14 @@ git clone https://github.com/96boards-akebi96/akebi96-tools.git
 #### Download Mali Kernel Driver
 
 In this version, you have to download Mali kernel driver
- (TX041-SW-99002-r26p0-01rel0.tgz) from arm's download site manually
+ (TX041-SW-99002-r28p0-01rel0.tgz) from arm's download site manually
 ( https://developer.arm.com/products/software/mali-drivers/midgard-kernel ).
 
 Download it and put it under ~/linaro/aosp directory.
 
 ```
 mkdir ~/linaro/aosp/
-mv TX041-SW-99002-r26p0-01rel0.tgz ~/linaro/aosp/
+mv TX041-SW-99002-r28p0-01rel0.tgz ~/linaro/aosp/
 ```
 
 ### Instruction to create docker image
