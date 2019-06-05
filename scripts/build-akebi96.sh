@@ -103,6 +103,19 @@ export ARCH=arm64
 export CROSS_COMPILE=aarch64-linux-gnu-
 mkdir -p $KBIN_DIR $ANDR_DIR $IMG_DIR $TFTP_DIR
 
+## Check files
+if [ ! -f $MALI_FILE ]; then
+  echo "ERROR: $MALI_FILE is not found!"
+  echo "Please download TX041-SW-99002-r28p0-01rel0.tgz from arm (https://developer.arm.com/tools-and-software/graphics-and-gaming/mali-drivers/midgard-kernel) and save it as $MALI_FILE"
+  exit 1
+fi
+
+if [ ! -f $GRALLOC_FILE ]; then
+  echo "ERROR: $GRALLOC_FILE is not found!"
+  echo "Please download TX041-SW-99005-r28p0-01rel0.tgz from arm (https://developer.arm.com/tools-and-software/graphics-and-gaming/mali-drivers/android-gralloc-module) and save it as $GRALLOC_FILE"
+  exit 1
+fi
+
 ## Download Kernel and Drivers
 
 ### Clone the repository and define ${PREFIX}_DIR variable
