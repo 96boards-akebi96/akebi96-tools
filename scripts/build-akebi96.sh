@@ -84,6 +84,9 @@ MANIFEST_URL=${MANIFEST_URL:-${AKEBI96_PRJ}/akebi96-known-good-manifests.git}
 MANIFEST_TAG=${MANIFEST_TAG:-master}
 AOSP_URL=${AOSP_URL:-https://android.googlesource.com/platform/manifest}
 AOSP_TAG=${AOSP_TAG:-master}
+GRALLOC_FILE=${GRALLOC_FILE:-${TOPDIR}/TX041-SW-99005-r28p0-01rel0.tgz}
+# This is not configurable
+GRALLOC_DIR=${ANDR_DIR}/vendor/arm/gralloc/driver/product/android/gralloc/
 
 ### Other configs
 JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
@@ -125,20 +128,21 @@ git_clone ACFG
 git_clone WIFI
 git_clone BT
 git_clone VOCD
+git_clone MALIP
 
 if [ $ONLY_AOSP -ne 1 ]; then
 ## Download and patch Mali kernel driver
 
 if [ ! -d $MALI_DIR -o $SYNC_GIT -eq 1 ]; then
-  git_clone MALIP
   rm -rf $MALI_DIR
   TMPDIR=`mktemp -d /tmp/mali-XXXXXX`
   tar xzf $MALI_FILE -C $TMPDIR
-  mv $TMPDIR/*/driver/product/kernel/ $MALI_DIR
+  mkdir -p $MALI_DIR
+  mv $TMPDIR/*/driver/product/kernel/* $MALI_DIR/
   rm -rf $TMPDIR
   cd $MALI_DIR/
-  cat ${MALIP_DIR}/series | while read p; do
-    patch -p1 < ${MALIP_DIR}/${p}
+  cat ${MALIP_DIR}/mali/series | while read p; do
+    patch -p1 < ${MALIP_DIR}/mali/${p}
   done
 fi
 
@@ -223,8 +227,23 @@ if [ $SYNC_GIT -eq 1 ]; then
   repo sync -j $SYNC_JOBS -m akebi96.xml
 fi
 
+### Prepare Custom Gralloc
+if [ ! -d $GRALLOC_DIR -o $SYNC_GIT -eq 1 ]; then
+  rm -rf $GRALLOC_DIR
+  TMPDIR=`mktemp -d /tmp/gralloc-XXXXXX`
+  tar xzf $GRALLOC_FILE -C $TMPDIR
+  mkdir -p $GRALLOC_DIR
+  mv $TMPDIR/*/driver/product/android/gralloc/* $GRALLOC_DIR/
+  rm -rf $TMPDIR
+  cd $GRALLOC_DIR/
+  cat ${MALIP_DIR}/gralloc/series | while read p; do
+    patch -p1 < ${MALIP_DIR}/gralloc/${p}
+  done
+fi
+
 ## Build AOSP with new kernels
 
+cd $ANDR_DIR
 ### Update prebuild binaries
 cp ${IMG_DIR}/Image ${IMG_DIR}/uniphier-ld20-akebi96.dtb \
    ${IMG_DIR}/8822bu.ko ${IMG_DIR}/rtk_btusb.ko ${IMG_DIR}/mali_kbase.ko \
