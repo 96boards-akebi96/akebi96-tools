@@ -155,6 +155,8 @@ if [ ! -d $MALI_DIR -o $SYNC_GIT -eq 1 ]; then
   rm -rf $TMPDIR
   cd $MALI_DIR/
   cat ${MALIP_DIR}/mali/series | while read p; do
+    p=${p%#*}
+    [ -z "$p" ] && continue
     patch -p1 < ${MALIP_DIR}/mali/${p}
   done
 fi
@@ -250,6 +252,8 @@ if [ ! -d $GRALLOC_DIR -o $SYNC_GIT -eq 1 ]; then
   rm -rf $TMPDIR
   cd $GRALLOC_DIR/
   cat ${MALIP_DIR}/gralloc/series | while read p; do
+    p=${p%#*}
+    [ -z "$p" ] && continue
     patch -p1 < ${MALIP_DIR}/gralloc/${p}
   done
 fi
