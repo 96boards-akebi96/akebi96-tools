@@ -72,21 +72,15 @@ WIFI_URL=${WIFI_URL:-${AKEBI96_PRJ}/rtl8822bu.git}
 WIFI_TAG=${WIFI_TAG:-akebi96}
 BT_URL=${BT_URL:-${AKEBI96_PRJ}/rtk_btusb.git}
 BT_TAG=${BT_TAG:-master}
-MALIP_URL=${MALIP_URL:-${AKEBI96_PRJ}/akebi96-mali-patches.git}
-MALIP_TAG=${MALIP_TAG:-master}
 VOCD_URL=${VOCD_URL:-${AKEBI96_PRJ}/kmod-video-out.git}
 VOCD_TAG=${VOCD_TAG:-master}
-
-MALI_FILE=${MALI_FILE:-${TOPDIR}/TX041-SW-99002-r28p0-01rel0.tgz}
-MALI_DIR=${MALI_DIR:-${TOPDIR}/mali-midgard}
+MALI_URL=${MALI_URL:-${AKEBI96_PRJ}/mali-kbase.git}
+MALI_TAG=${MALI_TAG:-akebi96/r28p0}
 
 MANIFEST_URL=${MANIFEST_URL:-${AKEBI96_PRJ}/akebi96-known-good-manifests.git}
 MANIFEST_TAG=${MANIFEST_TAG:-master}
 AOSP_URL=${AOSP_URL:-https://android.googlesource.com/platform/manifest}
 AOSP_TAG=${AOSP_TAG:-master}
-GRALLOC_FILE=${GRALLOC_FILE:-${TOPDIR}/TX041-SW-99005-r28p0-01rel0.tgz}
-# This is not configurable
-GRALLOC_DIR=${ANDR_DIR}/vendor/arm/gralloc/driver/product/android/gralloc/
 
 ### Other configs
 JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
@@ -102,19 +96,6 @@ OPT_KCONFIG=${OPT_KCONFIG:-}
 export ARCH=arm64
 export CROSS_COMPILE=aarch64-linux-gnu-
 mkdir -p $KBIN_DIR $ANDR_DIR $IMG_DIR $TFTP_DIR
-
-## Check files
-if [ ! -f $MALI_FILE ]; then
-  echo "ERROR: $MALI_FILE is not found!"
-  echo "Please download TX041-SW-99002-r28p0-01rel0.tgz from arm (https://developer.arm.com/tools-and-software/graphics-and-gaming/mali-drivers/midgard-kernel) and save it as $MALI_FILE"
-  exit 1
-fi
-
-if [ ! -f $GRALLOC_FILE ]; then
-  echo "ERROR: $GRALLOC_FILE is not found!"
-  echo "Please download TX041-SW-99005-r28p0-01rel0.tgz from arm (https://developer.arm.com/tools-and-software/graphics-and-gaming/mali-drivers/android-gralloc-module) and save it as $GRALLOC_FILE"
-  exit 1
-fi
 
 ## Download Kernel and Drivers
 
@@ -141,25 +122,9 @@ git_clone ACFG
 git_clone WIFI
 git_clone BT
 git_clone VOCD
-git_clone MALIP
+git_clone MALI
 
 if [ $ONLY_AOSP -ne 1 ]; then
-## Download and patch Mali kernel driver
-
-if [ ! -d $MALI_DIR -o $SYNC_GIT -eq 1 ]; then
-  rm -rf $MALI_DIR
-  TMPDIR=`mktemp -d /tmp/mali-XXXXXX`
-  tar xzf $MALI_FILE -C $TMPDIR
-  mkdir -p $MALI_DIR
-  mv $TMPDIR/*/driver/product/kernel/* $MALI_DIR/
-  rm -rf $TMPDIR
-  cd $MALI_DIR/
-  cat ${MALIP_DIR}/mali/series | while read p; do
-    p=${p%#*}
-    [ -z "$p" ] && continue
-    patch -p1 < ${MALIP_DIR}/mali/${p}
-  done
-fi
 
 ## Build 4.19 kernel
 
@@ -240,22 +205,6 @@ fi
 ### Sync AOSP 9
 if [ $SYNC_GIT -eq 1 ]; then
   repo sync -j $SYNC_JOBS -m akebi96.xml
-fi
-
-### Prepare Custom Gralloc
-if [ ! -d $GRALLOC_DIR -o $SYNC_GIT -eq 1 ]; then
-  rm -rf $GRALLOC_DIR
-  TMPDIR=`mktemp -d /tmp/gralloc-XXXXXX`
-  tar xzf $GRALLOC_FILE -C $TMPDIR
-  mkdir -p $GRALLOC_DIR
-  mv $TMPDIR/*/driver/product/android/gralloc/* $GRALLOC_DIR/
-  rm -rf $TMPDIR
-  cd $GRALLOC_DIR/
-  cat ${MALIP_DIR}/gralloc/series | while read p; do
-    p=${p%#*}
-    [ -z "$p" ] && continue
-    patch -p1 < ${MALIP_DIR}/gralloc/${p}
-  done
 fi
 
 ## Build AOSP with new kernels
