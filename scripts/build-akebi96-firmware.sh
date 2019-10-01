@@ -71,7 +71,7 @@ PREBIN_URL=${PREBIN_URL:-${AKEBI96_PRJ}/akebi96-prebuild.git}
 PREBIN_TAG=${PREBIN_TAG:-master}
 UBOOT_URL=${UBOOT_URL:-${AKEBI96_PRJ}/u-boot.git}
 UBOOT_TAG=${UBOOT_TAG:-akebi96}
-ATF_URL=${ATF_URL:-${AKEBI96_PRJ}/arm-trusted-firmware.git}
+ATF_URL=${ATF_URL:-https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git}
 ATF_TAG=${ATF_TAG:-master}
 
 ### Other configs
