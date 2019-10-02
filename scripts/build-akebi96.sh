@@ -77,7 +77,7 @@ VOCD_TAG=${VOCD_TAG:-master}
 MALI_URL=${MALI_URL:-${AKEBI96_PRJ}/mali-kbase.git}
 MALI_TAG=${MALI_TAG:-akebi96/r28p0}
 
-MANIFEST_URL=${MANIFEST_URL:-${AKEBI96_PRJ}/akebi96-known-good-manifests.git}
+MANIFEST_URL=${MANIFEST_URL:-${AKEBI96_PRJ}/akebi96-manifests.git}
 MANIFEST_TAG=${MANIFEST_TAG:-master}
 AOSP_URL=${AOSP_URL:-https://android.googlesource.com/platform/manifest}
 AOSP_TAG=${AOSP_TAG:-master}
