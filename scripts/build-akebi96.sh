@@ -204,7 +204,7 @@ fi
 
 ### Sync AOSP 9
 if [ $SYNC_GIT -eq 1 ]; then
-  repo sync -j $SYNC_JOBS -m akebi96.xml
+  repo sync --force-sync -j $SYNC_JOBS -m akebi96.xml
 fi
 
 ## Build AOSP with new kernels
