@@ -41,7 +41,7 @@ If there are no images, the recovery script can just skip it.
 
 ```
 $ cd ~/linaro/aosp/tftpboot
-$ cp uniphir_bl.bin fip.bin boot_voc_ld20.bin /mnt/boot/
+$ cp uniphier_bl.bin fip.bin boot_voc_ld20.bin /mnt/boot/
 ```
 
 ## Copy AOSP Images

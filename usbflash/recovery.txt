@@ -14,7 +14,7 @@ echo "*** Writing boot-FW to boot partition ... ***"
 echo "*********************************************"
 
 mmc dev 0 1
-fatload usb ${devnum}:${partnum} $buf_addr $fw_folder/unph_bl.bin   && mmc write $buf_addr 0x00000000 0x00000100
+fatload usb ${devnum}:${partnum} $buf_addr $fw_folder/uniphier_bl.bin   && mmc write $buf_addr 0x00000000 0x00000100
 fatload usb ${devnum}:${partnum} $buf_addr $fw_folder/fip.bin     && mmc write $buf_addr 0x00000100 0x00000d00
 fatload usb ${devnum}:${partnum} $buf_addr $fw_folder/boot_voc_ld20.bin     && mmc write $buf_addr 0x00000e00 0x00000200
 
