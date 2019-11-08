@@ -169,8 +169,8 @@ make KSRC=$KSRC_DIR KVER=$KVER O=$KBIN_DIR -j $JOBS
 cp 8822bu.ko $IMG_DIR
 
 cd $BT_DIR
-make KBUILD=$KBIN_DIR -j $JOBS
-cp rtk_btusb.ko $IMG_DIR
+make KERNEL_DIR=$KSRC_DIR O=$KBIN_DIR KBUILD=$KBIN_DIR -j $JOBS
+cp rtk_btusb_core.ko $IMG_DIR/rtk_btusb.ko
 
 cd $VOCD_DIR
 make modules KERNEL_DIR=${KBIN_DIR} -j $JOBS
