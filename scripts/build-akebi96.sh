@@ -166,6 +166,9 @@ export KVER=`make O=$KBIN_DIR -s kernelrelease`
 
 cd $WIFI_DIR
 make KSRC=$KSRC_DIR KVER=$KVER O=$KBIN_DIR -j $JOBS
+if [ -f rtl8822bu.ko ] ; then
+  mv rtl8822bu.ko 8822bu.ko
+fi
 cp 8822bu.ko $IMG_DIR
 
 cd $BT_DIR
