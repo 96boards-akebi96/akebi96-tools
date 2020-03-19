@@ -157,6 +157,7 @@ if [ $BUILD_KERNEL -ne 0 ] ; then
   cp ${KBIN_DIR}/arch/arm64/boot/Image \
      ${KBIN_DIR}/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dtb \
      $IMG_DIR
+  echo "# $GITHASH" >> ${KCONFIG_CONFIG}
   cp ${KCONFIG_CONFIG} ${IMG_DIR}/kconfig
 fi
 
