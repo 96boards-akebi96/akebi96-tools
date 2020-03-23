@@ -126,17 +126,18 @@ git_clone MALI
 
 if [ $ONLY_AOSP -ne 1 ]; then
 
-## Build 4.19 kernel
+## Build Linux kernel
 
 cd $KSRC_DIR
 export KCONFIG_CONFIG=${KBIN_DIR}/.config
+KV=$(make kernelversion | cut -d. -f 1,2)
 
-make O=$KBIN_DIR defconfig
+cp arch/arm64/configs/defconfig ${KCONFIG_CONFIG}
 ./scripts/kconfig/merge_config.sh -m ${KCONFIG_CONFIG} \
 	${CFG_DIR}/linux/akebi96-base.config \
-	${ACFG_DIR}/android-4.19/android-base.config \
-	${ACFG_DIR}/android-4.19/android-recommended.config \
-	${ACFG_DIR}/android-4.19/android-recommended-arm64.config \
+	${ACFG_DIR}/android-${KV}/android-base.config \
+	${ACFG_DIR}/android-${KV}/android-recommended.config \
+	${ACFG_DIR}/android-${KV}/android-recommended-arm64.config \
 	${CFG_DIR}/linux/akebi96-aosp-vendor.config ${OPT_KCONFIG}
 make O=$KBIN_DIR olddefconfig
 [ $KMENUCONFIG -ne 0 ] && make O=$KBIN_DIR menuconfig
