@@ -115,6 +115,17 @@ cd $UBOOT_DIR
 make uniphier_v8_defconfig
 ./scripts/kconfig/merge_config.sh -m ./.config ${CFG_DIR}/u-boot/akebi96-aosp.config
 make olddefconfig
+UBOOT_BUILD=1
+if [ $(git diff | wc -l) = 0 ]; then
+  GITHASH=$(git log -n 1 --format="%h")
+  echo "# $GITHASH" >> .config
+  if [ -f $IMG_DIR/uboot.config ]; then
+    UBOOT_BUILD=$(diff -u $IMG_DIR/uboot.config .config | wc -l)
+  fi
+  cp .config $IMG_DIR/uboot.config
+fi
+
+if [ $UBOOT_BUILD != 0 ];then
 if [ $NO_VOCFW -eq 0 ]; then
   cp ${PREBIN_DIR}/u-boot/uniphier-ld20-aosp.h include/configs/
   make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier-ld20-aosp
@@ -122,12 +133,16 @@ else
   make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier
 fi
 cp ./u-boot.bin $IMG_DIR
+fi
 
 ## Copy OP-TEE OS from AOSP
 if [ $NO_OPTEE -eq 0 ]; then
-AOSP_OPTEE=${ANDR_DIR}/out/target/product/akebi96/optee/arm-plat-uniphier/core/tee-pager.bin
+OPTEE_OUT_DIR=${ANDR_DIR}/out/target/product/akebi96/optee/arm-plat-uniphier/core
+AOSP_OPTEE=${OPTEE_OUT_DIR}/tee-pager_v2.bin
+if [ ! -f ${AOSP_OPTEE} ]; then
+  AOSP_OPTEE=$OPTEE_OUT_DIR/tee-pager.bin
+fi
 CURR_OPTEE=${IMG_DIR}/tee-pager.bin
-
 if [ ! -f $AOSP_OPTEE -a ! -f $CURR_OPTEE ]; then
   echo "ERROR: No OPTEE OS found!"
   exit 1
