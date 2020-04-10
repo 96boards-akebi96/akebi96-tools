@@ -126,20 +126,22 @@ UBOOT_BUILD=1
 if [ $(git diff | wc -l) = 0 ]; then
   GITHASH=$(git log -n 1 --format="%h")
   echo "# $GITHASH" >> .config
-  if [ -f $IMG_DIR/uboot.config ]; then
+  if [ -f $IMG_DIR/uboot.config -a -f $IMG_DIR/uboot.bin ]; then
     UBOOT_BUILD=$(diff -u $IMG_DIR/uboot.config .config | wc -l)
   fi
-  cp .config $IMG_DIR/uboot.config
 fi
 
 if [ $UBOOT_BUILD != 0 ];then
-if [ $NO_VOCFW -eq 0 ]; then
-  cp ${PREBIN_DIR}/u-boot/uniphier-ld20-aosp.h include/configs/
-  make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier-ld20-aosp
-else
-  make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier
-fi
-cp ./u-boot.bin $IMG_DIR
+  if [ $NO_VOCFW -eq 0 ]; then
+    cp ${PREBIN_DIR}/u-boot/uniphier-ld20-aosp.h include/configs/
+    make DEVICE_TREE=uniphier-ld20-akebi96 \
+	 CONFIG_SYS_CONFIG_NAME=uniphier-ld20-aosp
+  else
+    make DEVICE_TREE=uniphier-ld20-akebi96 \
+	 CONFIG_SYS_CONFIG_NAME=uniphier
+  fi
+  cp u-boot.bin $IMG_DIR
+  cp .config $IMG_DIR/uboot.config
 fi
 
 build_optee() {(
