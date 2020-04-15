@@ -12,6 +12,7 @@ usage(){ # error-message
   echo "	--sync          Sync the source code"
   echo "	--no-voc        Do not use VOC firmware"
   echo "	--no-optee      Do not use OP-TEE OS"
+  echo "	--no-aosp       Do not use AOSP build OPTEE"
   echo "	--debug         Show executed commands for debug"
   echo "	-h, --help      Show this message"
   [ "$1" ] && exit 1
@@ -32,6 +33,8 @@ while [ $# -ne 0 ]; do
     SYNC_GIT=1;;
   --no-voc)
     NO_VOCFW=1;;
+  --no-aosp)
+    NO_AOSP=1;;
   --no-optee)
     NO_OPTEE=1;;
   --debug)
@@ -73,12 +76,15 @@ UBOOT_URL=${UBOOT_URL:-${AKEBI96_PRJ}/u-boot.git}
 UBOOT_TAG=${UBOOT_TAG:-akebi96}
 ATF_URL=${ATF_URL:-https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git}
 ATF_TAG=${ATF_TAG:-master}
+OPTEE_URL=${OPTEE_URL:-${AKEBI96_PRJ}/optee_os.git}
+OPTEE_TAG=${OPTEE_TAG:-akebi96}
 
 ### Other configs
 JOBS=${JOBS:-`getconf _NPROCESSORS_ONLN`}
 SYNC_GIT=${SYNC_GIT:-0}
 NO_VOCFW=${NO_VOCFW:-0}
 NO_OPTEE=${NO_OPTEE:-0}
+NO_AOSP=${NO_AOSP:-0}
 
 ## Download Firmware
 
@@ -103,6 +109,7 @@ git_clone CFG
 [ $NO_VOCFW -eq 0 ] && git_clone PREBIN
 git_clone UBOOT
 git_clone ATF
+[ $NO_AOSP -ne 0 ] && git_clone OPTEE
 
 ## Setup Env
 export ARCH=arm64
@@ -119,38 +126,64 @@ UBOOT_BUILD=1
 if [ $(git diff | wc -l) = 0 ]; then
   GITHASH=$(git log -n 1 --format="%h")
   echo "# $GITHASH" >> .config
-  if [ -f $IMG_DIR/uboot.config ]; then
+  if [ -f $IMG_DIR/uboot.config -a -f $IMG_DIR/uboot.bin ]; then
     UBOOT_BUILD=$(diff -u $IMG_DIR/uboot.config .config | wc -l)
   fi
-  cp .config $IMG_DIR/uboot.config
 fi
 
 if [ $UBOOT_BUILD != 0 ];then
-if [ $NO_VOCFW -eq 0 ]; then
-  cp ${PREBIN_DIR}/u-boot/uniphier-ld20-aosp.h include/configs/
-  make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier-ld20-aosp
-else
-  make DEVICE_TREE=uniphier-ld20-akebi96 CONFIG_SYS_CONFIG_NAME=uniphier
-fi
-cp ./u-boot.bin $IMG_DIR
+  if [ $NO_VOCFW -eq 0 ]; then
+    cp ${PREBIN_DIR}/u-boot/uniphier-ld20-aosp.h include/configs/
+    make DEVICE_TREE=uniphier-ld20-akebi96 \
+	 CONFIG_SYS_CONFIG_NAME=uniphier-ld20-aosp
+  else
+    make DEVICE_TREE=uniphier-ld20-akebi96 \
+	 CONFIG_SYS_CONFIG_NAME=uniphier
+  fi
+  cp u-boot.bin $IMG_DIR
+  cp .config $IMG_DIR/uboot.config
 fi
 
-## Copy OP-TEE OS from AOSP
+build_optee() {(
+  cd $OPTEE_DIR
+  TARGET=ld20
+  export CROSS_COMPILE=aarch64-linux-gnu-
+  export CROSS_COMPILE_32=arm-linux-gnueabihf-
+  make PLATFORM=uniphier-${TARGET} ARCH=arm CFG_ARM64_core=y clean
+  make PLATFORM=uniphier-${TARGET} ARCH=arm CFG_ARM64_core=y \
+       CROSS_COMPILE_ta_arm64=${CROSS_COMPILE} \
+       CROSS_COMPILE_ta_arm32=${CROSS_COMPILE_32} \
+       CFG_TEE_CORE_LOG_LEVEL=3 CFG_TEE_TA_LOG_LEVEL=3 \
+       -j 4
+  )}
+
+## Copy OP-TEE OS from AOSP or Build it from source
 if [ $NO_OPTEE -eq 0 ]; then
-OPTEE_OUT_DIR=${ANDR_DIR}/out/target/product/akebi96/optee/arm-plat-uniphier/core
-AOSP_OPTEE=${OPTEE_OUT_DIR}/tee-pager_v2.bin
-if [ ! -f ${AOSP_OPTEE} ]; then
-  AOSP_OPTEE=$OPTEE_OUT_DIR/tee-pager.bin
+if [ $NO_AOSP -eq 0 ]; then
+  OPTEE_OUT_DIR=${ANDR_DIR}/out/target/product/akebi96/optee/arm-plat-uniphier/core
+else
+  OPTEE_OUT_DIR=${OPTEE_DIR}/out/arm-plat-uniphier/core
 fi
-CURR_OPTEE=${IMG_DIR}/tee-pager.bin
-if [ ! -f $AOSP_OPTEE -a ! -f $CURR_OPTEE ]; then
-  echo "ERROR: No OPTEE OS found!"
-  exit 1
+PREBUILT_OPTEE=${OPTEE_OUT_DIR}/tee-pager_v2.bin
+if [ ! -f ${PREBUILT_OPTEE} ]; then
+  PREBUILT_OPTEE=$OPTEE_OUT_DIR/tee-pager.bin
 fi
 
-if [ ! -f $CURR_OPTEE -o $AOSP_OPTEE -nt $CURR_OPTEE ]; then
-  cp -f $AOSP_OPTEE $CURR_OPTEE
+CURR_OPTEE=${IMG_DIR}/tee-pager.bin
+
+if [ $NO_AOSP -eq 0 ]; then
+  if [ ! -f $PREBUILT_OPTEE -a ! -f $CURR_OPTEE ]; then
+    echo "ERROR: No OPTEE OS found!"
+    exit 1
+  fi
+  if [ ! -f $CURR_OPTEE -o $PREBUILT_OPTEE -nt $CURR_OPTEE ]; then
+    cp -f $PREBUILT_OPTEE $CURR_OPTEE
+  fi
+else
+  build_optee
+  cp $PREBUILT_OPTEE $CURR_OPTEE
 fi
+
 else
 CURR_OPTEE=
 fi
