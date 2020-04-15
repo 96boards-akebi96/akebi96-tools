@@ -131,6 +131,9 @@ if [ $ONLY_AOSP -ne 1 ]; then
 cd $KSRC_DIR
 export KCONFIG_CONFIG=${KBIN_DIR}/.config
 KV=$(make kernelversion | cut -d. -f 1,2)
+if [ ! -d ${ACFG_DIR}/android-${KV} ]; then
+  KV=5.4
+fi
 
 cp arch/arm64/configs/defconfig ${KCONFIG_CONFIG}
 ./scripts/kconfig/merge_config.sh -m ${KCONFIG_CONFIG} \
