@@ -30,6 +30,8 @@ while [ $# -ne 0 ]; do
     SYNC_GIT=1;;
   --no-aosp)
     NO_AOSP=1;;
+  --no-drivers)
+    NO_DRIVERS=1;;
   --only-aosp)
     ONLY_AOSP=1;;
   --debug)
@@ -91,6 +93,7 @@ NO_AOSP=${NO_AOSP:-0}
 ONLY_AOSP=${ONLY_AOSP:-0}
 KMENUCONFIG=${KMENUCONFIG:-0}
 OPT_KCONFIG=${OPT_KCONFIG:-}
+NO_DRIVERS=${NO_DRIVERS:-0}
 
 ## Preparation
 export ARCH=arm64
@@ -168,7 +171,7 @@ fi
 export KVER=`make O=$KBIN_DIR -s kernelrelease`
 
 ### Build out-of-tree drivers
-
+if [ $NO_DRIVERS -eq 0 ]; then
 cd $WIFI_DIR
 make KSRC=$KSRC_DIR KVER=$KVER O=$KBIN_DIR -j $JOBS
 if [ -f rtl8822bu.ko ] ; then
@@ -187,6 +190,7 @@ cp vocdrv_ld20/vocdrv-ld20.ko $IMG_DIR
 cd $MALI_DIR
 make KERNEL_DIR=${KSRC_DIR} MAKETOP=$IMG_DIR O=${KBIN_DIR} modules -j  $JOBS
 cp drivers/gpu/arm/midgard/mali_kbase.ko $IMG_DIR
+fi ## NO_DRIVERS
 
 fi ## !ONLY_AOSP
 
