@@ -45,8 +45,10 @@ ENV GCC_FILE="${GCC_DIR}.tar.xz"
 
 # install toolchains under /opt/toolchains
 WORKDIR /opt/
-RUN wget ${DLDIR32_URL}/${GCC32_FILE} && tar xf ${GCC32_FILE}
-RUN wget ${DLDIR_URL}/${GCC_FILE} && tar xf ${GCC_FILE}
+COPY . /opt/
+RUN [ -f ${GCC32_FILE} ] || wget ${DLDIR32_URL}/${GCC32_FILE}
+RUN [ -f ${GCC_FILE} ] || wget ${DLDIR_URL}/${GCC_FILE}
+RUN tar xf ${GCC32_FILE} && tar xf ${GCC_FILE}
 
 ENV PATH="$PATH:/opt/${GCC_DIR}/bin:/opt/${GCC32_DIR}/bin"
 # prior target is aarch64
